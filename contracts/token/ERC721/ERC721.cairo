@@ -151,13 +151,29 @@ func safeTransferFrom{pedersen_ptr: HashBuiltin*, syscall_ptr: felt*, range_chec
 }
 
 @external
-func mint{pedersen_ptr: HashBuiltin*, syscall_ptr: felt*, range_check_ptr}(to: felt) {
+func mint{pedersen_ptr: HashBuiltin*, syscall_ptr: felt*, range_check_ptr}(
+    to: felt, token_uri_len: felt, token_uri: felt*
+) {
     Ownable.assert_only_owner();
     let (token_id) = next_token_id_storage.read();
     let one_as_uint = Uint256(1, 0);
     let (next_token_id, _) = uint256_add(one_as_uint, token_id);
     next_token_id_storage.write(next_token_id);
     ERC721._mint(to, token_id);
+    return ();
+}
+
+@external
+func mintAndSetTokenURI{pedersen_ptr: HashBuiltin*, syscall_ptr: felt*, range_check_ptr}(
+    to: felt, token_uri_len: felt, token_uri: felt*
+) {
+    Ownable.assert_only_owner();
+    let (token_id) = next_token_id_storage.read();
+    let one_as_uint = Uint256(1, 0);
+    let (next_token_id, _) = uint256_add(one_as_uint, token_id);
+    next_token_id_storage.write(next_token_id);
+    ERC721._mint(to, token_id);
+    ERC721_Metadata_setTokenURI(token_id, token_uri_len, token_uri);
     return ();
 }
 
